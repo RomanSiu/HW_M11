@@ -7,10 +7,10 @@ def input_error(func):
             res = func(*args)
         except KeyError:
             print("Use valid contact!")
-            exit
+            exit()
         except ValueError:
             print("Write valid phone number")
-            exit
+            exit()
         else:
             return res
     return Inner
@@ -55,7 +55,7 @@ class Birthday(Field):
             self._value = datetime.strptime(new_value, "%d.%m.%Y")
         except ValueError:
             print("Use birthday format dd.mm.yyyy!")
-            exit
+            exit()
     
 class Record:
     def __init__(self, name):
@@ -133,7 +133,7 @@ book = AddressBook()
 
 # Створення запису для John
 john_record = Record("John")
-john_record.add_phone("1234567890", "23.09.2004")
+john_record.add_phone("1234567890", "3.9.2004")
 john_record.add_phone("5555555555")
 
 print(john_record.days_to_birthday())
