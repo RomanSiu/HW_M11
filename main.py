@@ -88,11 +88,12 @@ class Record:
         new_list = [p.value for p in self.phones] 
         old_phone_indx = new_list.index(old_phone)
         new_list.remove(old_phone)
-        _ = self.phones.pop(old_phone_indx)
         p = Phone()
         p.value = new_phone
         self.phone = p
-        self.phones.insert(old_phone_indx, self.phone)
+        if p.value != "None":
+            self.phones.pop(old_phone_indx)
+            self.phones.insert(old_phone_indx, self.phone)
     
     @input_error    
     def find_phone(self, phone):
@@ -104,7 +105,7 @@ class Record:
     def remove_phone(self, phone):
         new_list = [p.value for p in self.phones] 
         phone_indx = new_list.index(phone)
-        _ = self.phones.pop(phone_indx)
+        self.phones.pop(phone_indx)
 
     def __str__(self):
         if self.birthday:
@@ -121,13 +122,12 @@ class AddressBook(UserDict):
         for k in self.data.keys():
             if k == name:
                 return self.data[k]
-        print("There is no such contct in the address book")
+        print("There is no such contact in the address book")
 
     @input_error
     def delete(self, name):
-        _ = self.data.pop(name)
+        self.data.pop(name)
         
-
 # Створення нової адресної книги
 book = AddressBook()
 
@@ -152,7 +152,7 @@ for name, record in book.data.items():
 
 # Знаходження та редагування телефону для John
 john = book.find("John")
-john.edit_phone("1234567890", "1112223333")
+john.edit_phone("1234567890", "111222333")
 
 print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
 
