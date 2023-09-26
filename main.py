@@ -26,36 +26,36 @@ class Name(Field):
     pass
 
 class Phone(Field):
-    def __init__(self):
-        self._value = None
+    def __init__(self, value = None):
+        self._value = value
         
-    @property
-    def value(self):
-        return str(self._value)
+    def get_phone(self):
+        return self._value
 
-    @value.setter
-    def value(self, new_value):
-        int(new_value)
-        if len(new_value) == 10:
+    def set_phone(self, new_value):
+        if len(new_value) == 10 and new_value.isdigit():
             self._value = new_value
+            pass
         else:
             print("Use valid phone format.")
-
+            
+    value = property(get_phone, set_phone)            
+            
 class Birthday(Field):
-    def __init__(self):
-        self._value = None
+    def __init__(self, value = None):
+        self._value = value
         
-    @property
-    def value(self):
+    def get_bday(self):
         return str(self._value.date())
 
-    @value.setter
-    def value(self, new_value):
+    def set_bday(self, new_value):
         try:
             self._value = datetime.strptime(new_value, "%d.%m.%Y")
         except ValueError:
             print("Use birthday format dd.mm.yyyy!")
             exit()
+            
+    value = property(get_bday, set_bday)
     
 class Record:
     def __init__(self, name):
@@ -63,10 +63,10 @@ class Record:
         self.phones = []
         self.birthday = None
 
-    def add_phone(self, phone, birthday = None):
+    def add_phone(self, phone = None, birthday = None):
         p = Phone()
         p.value = phone
-        if p.value != "None":
+        if p.value != None:
             self.phone = p
             self.phones.append(self.phone)
         if birthday:
@@ -81,6 +81,7 @@ class Record:
             res = contact_bd.replace(year=today_date.year + 1).date() - today_date.date()
         else:
             res = contact_bd.replace(year=today_date.year).date() - today_date.date()
+            
         return f"{res.days} days until {self.name}'s birthday."
     
     @input_error    
@@ -91,14 +92,17 @@ class Record:
         p = Phone()
         p.value = new_phone
         self.phone = p
-        if p.value != "None":
+        if p.value != None:
             self.phones.pop(old_phone_indx)
             self.phones.insert(old_phone_indx, self.phone)
-    
-    @input_error    
+        
     def find_phone(self, phone):
         new_list = [p.value for p in self.phones]
-        p_indx = new_list.index(phone)
+        try:
+            p_indx = new_list.index(phone)
+        except ValueError:
+            print("This contact doesn't have such a phone.")
+            exit()
         return self.phones[p_indx]
     
     @input_error        
@@ -108,10 +112,12 @@ class Record:
         self.phones.pop(phone_indx)
 
     def __str__(self):
-        if self.birthday:
+        if self.birthday and self.phones:
             return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday: {self.birthday.value}"
-        else:
+        elif self.phones:
             return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+        else:
+            return f"Contact name: {self.name.value}"
 
 class AddressBook(UserDict):
     def add_record(self, record):
@@ -126,39 +132,4 @@ class AddressBook(UserDict):
 
     @input_error
     def delete(self, name):
-        self.data.pop(name)
-        
-# Створення нової адресної книги
-book = AddressBook()
-
-# Створення запису для John
-john_record = Record("John")
-john_record.add_phone("1234567890", "3.9.2004")
-john_record.add_phone("5555555555")
-
-print(john_record.days_to_birthday())
-
-# Додавання запису John до адресної книги
-book.add_record(john_record)
-
-# Створення та додавання нового запису для Jane
-jane_record = Record("Jane")
-jane_record.add_phone("9876543210")
-book.add_record(jane_record)
-
-# Виведення всіх записів у книзі
-for name, record in book.data.items():
-    print(record)
-
-# Знаходження та редагування телефону для John
-john = book.find("John")
-john.edit_phone("1234567890", "111222333")
-
-print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
-
-# Пошук конкретного телефону у записі John
-found_phone = john.find_phone("5555555555")
-print(f"{john.name}: {found_phone}")  # Виведення: 5555555555
-
-# Видалення запису Jane
-book.delete("Jane")
+        self.data.pop(name)        
