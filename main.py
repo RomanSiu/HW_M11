@@ -16,19 +16,22 @@ def input_error(func):
     return Inner
 
 class Field:
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return str(self.value)
-
-class Name(Field):
-    pass
-
-class Phone(Field):
     def __init__(self, value = None):
         self._value = value
-        
+
+    def __str__(self):
+        return str(self._value)
+
+class Name(Field):
+    def get_name(self):
+        return self._value
+
+    def set_name(self, new_value):
+        self._value = new_value
+
+    value = property(get_name, set_name)
+
+class Phone(Field):
     def get_phone(self):
         return self._value
 
@@ -42,9 +45,6 @@ class Phone(Field):
     value = property(get_phone, set_phone)            
             
 class Birthday(Field):
-    def __init__(self, value = None):
-        self._value = value
-        
     def get_bday(self):
         return str(self._value.date())
 
